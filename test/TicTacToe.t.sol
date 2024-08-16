@@ -14,15 +14,10 @@ contract TicTacToeTest is Test {
 
     function test_initGameBoard() public{
         sut.initGameBoard();
+
+        uint8 board = sut.gameBoard(1,2);
+        console.log(board);
     }
 
-    function test_Increment() public {
-        sut.increment();
-        assertEq(sut.number(), 1);
-    }
 
-    function testFuzz_SetNumber(uint256 x) public {
-        sut.setNumber(x);
-        assertEq(sut.number(), x);
-    }
 }
