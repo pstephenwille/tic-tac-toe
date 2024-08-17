@@ -9,6 +9,7 @@ import {GameEvent} from "./GameEvent.sol";
 contract TicTacToe is GameEvent {
     address owner;
     uint8[3][3] public gameBoard;
+    string public nonce = 'nnnonce';
 
     constructor() {
         owner = msg.sender;
@@ -17,35 +18,49 @@ contract TicTacToe is GameEvent {
 
     function initGameBoard() public {
         gameBoard = [[10, 10, 10], [10, 10, 10], [10, 10, 10]];
-//        emit GameStateEvent("new game board created");
         emitGameEvent("new game board created");
     }
 
-    function makeMove(uint8 _x, uint8 _y, uint8 _mark) public {
-        gameBoard[_x][_y] = _mark;
-        string memory player = _convertMarkToXorY(_mark);
+    function makePlayerXMove(uint8 _x, uint8 _y, string calldata _nonce) public {
+//        require(nonce != null, "nonce value is required");
+        nonce = _nonce;
+        gameBoard[_x][_y] = 1;
         string memory positionX = Strings.toString(_x);
         string memory positionY = Strings.toString(_y);
-        string memory playerMovedToXYMessage = string.concat(player, " moved to ", positionX, ", ", positionY);
+        string memory playerMovedToXYMessage = string.concat("X moved to ", positionX, ", ", positionY);
 
         emitGameEvent(playerMovedToXYMessage);
+        makeBotMove();
     }
+
+//    function decodeData(bytes memory data) public pure returns (uint256, string memory) {
+//        (uint256 number, string memory text) = abi.decode(data, (uint256, string));
+//        return (number, text);
+//    }
 
     function makeBotMove() public {
-        uint randy = _random();
+        uint randNum = _random();
+//        uint8 n8 = uint8(randNum);
+        bytes memory bytesNum;
+        assembly {
+            bytesNum := randNum
+        }
+
+        (uint256 number1) = abi.decode(bytesNum, (uint256));
     }
 
+
     function _random() internal returns (uint) {
-        uint randomnumber = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, lastEventMessage)));
-        randomnumber = (randomnumber & 900) + 100;
+        uint randomnumber = uint(keccak256(abi.encodePacked(msg.sender, nonce)));
+        randomnumber = (randomnumber % 900) + 100;
 
         return randomnumber;
     }
 
     function makeCoordinate(uint num) public returns (uint) {
         uint coord = (num <= 300) ? 0 : num;
-        coord = (num > 300) ? 1 : num;
-        coord = (num > 600) ? 2 : coord;
+        coord = (num > 300 && num < 600) ? 1 : coord;
+        coord = (num >= 600) ? 2 : coord;
 
         return coord;
     }
