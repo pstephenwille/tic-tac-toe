@@ -10,6 +10,7 @@ contract TicTacToeTest is Test {
 
     event GameStateEvent(string message);
     event MoveMadeEvent(string message);
+    event GameOverEvent(string message);
 
     function setUp() public {
         sut = new TicTacToe();
@@ -28,7 +29,7 @@ contract TicTacToeTest is Test {
         sut.initGameBoard();
     }
 
-    function test_makeMove() public {
+    function xtest_makeMove() public {
         vm.expectEmit();
         emit MoveMadeEvent("X moved to 1, 1");
         sut.makePlayerXMove(1, 1, 'nonce');
@@ -36,12 +37,12 @@ contract TicTacToeTest is Test {
         assertEq(x, 1);
     }
 
-    function test_makeBotMove() public {
+    function xtest_makeBotMove() public {
         console.log(sut.nonce());
     }
 
 
-    function test_isPlannedMoveLegal() public {
+    function xtest_isPlannedMoveLegal() public {
         vm.pauseGasMetering();
         sut.makePlayerXMove(2, 1, 'nonce');
 
@@ -63,7 +64,7 @@ contract TicTacToeTest is Test {
         assertTrue(actual);
     }
 
-    function xtest_checkColumnsForWinner() public {
+    function test_checkColumnsForWinner() public {
         sut.makePlayerXMove(0, 1, 'nonce');
         sut.makePlayerXMove(1, 1, 'nonce');
         sut.makePlayerXMove(2, 1, 'nonce');

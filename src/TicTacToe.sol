@@ -16,7 +16,7 @@ contract TicTacToe is GameEvent {
     uint8 public moveCounter = 0;
 
     struct Winner {
-        uint player;
+        uint8 player;
         uint8[2][3] positions;
     }
 
@@ -44,10 +44,10 @@ contract TicTacToe is GameEvent {
 
         makeBotMove();
 
-        bool isWinner = _checkBoardForWinner();
+        bool winnerFound = _checkBoardForWinner();
 
-        if(isWinner){
-            //emit winner event
+        if(winnerFound){
+            emitGameOverEvent(winnerFound, winner.player, winner.positions);
         }
     }
 
