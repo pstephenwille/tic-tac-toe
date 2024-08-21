@@ -1,0 +1,17 @@
+#gameBoard {
+    table{
+        border-collapse: collapse;
+        margin: auto;
+    }
+    td {
+       padding: 1rem;
+        border: solid var(--font-color-blue);
+        height: 3rem;
+        width: 3rem;
+    }
+
+    td:hover {
+        background: lightgray;
+        cursor: pointer;
+    }
+}

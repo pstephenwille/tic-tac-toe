@@ -31,11 +31,17 @@ contract GameEvent {
         emit GameStateEvent(_message);
     }
 
-    function emitMoveMadeEvent(uint8 _x, uint8 _y, uint8 _player) public {
-        string memory positionX = Strings.toString(_x);
-        string memory positionY = Strings.toString(_y);
+    function emitMoveMadeEvent(uint8 _pos, uint8 _player, uint8[9] memory gameBoard) public {
         string memory player = _player == 0 ? 'BOT' : 'X';
-        string memory playerMovedToXYMessage = string.concat(player, " moved to ", positionX, ", ", positionY);
+        string memory board = "[";
+        for (uint8 i = 0; i < gameBoard.length; i++) {
+            if (i == gameBoard.length - 1) {
+                board = string.concat(board, Strings.toString(gameBoard[i]), "]");
+            } else {
+                board = string.concat(board, Strings.toString(gameBoard[i]), ",");
+            }
+        }
+        string memory playerMovedToXYMessage = string.concat(player, " moved to: ", Strings.toString(_pos), ". ", "Board state: ", board);
 
         emit MoveMadeEvent(playerMovedToXYMessage);
     }

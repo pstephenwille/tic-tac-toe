@@ -2,12 +2,16 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin-contracts-5.0.2/utils/Strings.sol";
+import "@openzeppelin-contracts-5.0.2/token/ERC20/ERC20.sol";
 import {Test, console} from "forge-std/Test.sol";
 import {GameEvent} from "./GameEvent.sol";
+//import "../dependencies/@openzeppelin-contracts-5.0.2/token/ERC20/ERC20.sol";
 
 
-contract TicTacToe is GameEvent {
+contract TicTacToe is GameEvent, ERC20 {
     address owner;
+    uint256 public gamePurse = 0;
+
     uint8[9] public gameBoard;
     string public nonce = 'default';
     uint8 playersLastMove;
@@ -23,20 +27,25 @@ contract TicTacToe is GameEvent {
 
     Winner public winner;
 
-    constructor() {
+    constructor() ERC20("TicTacToe", "TTT"){
         owner = msg.sender;
     }
 
-    function initGameBoard() public {
+    function mint() external {
+        gamePurse++;
+        _mint(owner, gamePurse);
+    }
+
+    function initGameBoard() external {
         gameBoard = [EMPTY_SPACE, EMPTY_SPACE, EMPTY_SPACE,
                     EMPTY_SPACE, EMPTY_SPACE, EMPTY_SPACE,
                     EMPTY_SPACE, EMPTY_SPACE, EMPTY_SPACE];
         emitGameEvent("new game board created");
     }
 
-    function makePlayerMove(uint8 _pos, string calldata _nonce) public {
+    function makePlayerMove(uint8 _pos, string calldata _nonce) external {
 //        require(nonce != null, "nonce value is required");
-        require(isMoveLegal(_pos), "move not allowed");
+        require(_isMoveLegal(_pos), string.concat("move not allowed at " , Strings.toString(_pos)));
         nonce = _nonce;
         moveCounter++;
         playersLastMove = _pos;
@@ -62,12 +71,12 @@ contract TicTacToe is GameEvent {
         uint8 botPos = _generateRandomXYPoint();
         bool isMoveLegal = false;
         while (!isMoveLegal) {
-            isMoveLegal = isMoveLegal(botPos);
+            isMoveLegal = _isMoveLegal(botPos);
             botPos++;
         }
         gameBoard[botPos] = BOT;
 
-//        emitMoveMadeEvent(botPosX, botPosY, BOT);
+        emitMoveMadeEvent(botPos, BOT, gameBoard);
     }
 
     function _checkBoardForWinner() public returns (bool){
@@ -79,7 +88,7 @@ contract TicTacToe is GameEvent {
         return false;
     }
 
-    function _gameIsADraw() public {
+    function _gameIsADraw() public returns(bool){
         for (uint8 i = 0; i < gameBoard.length; i++) {
             if (gameBoard[i] == EMPTY_SPACE) return false;
         }
@@ -158,7 +167,7 @@ contract TicTacToe is GameEvent {
         return pos;
     }
 
-    function isMoveLegal(uint8 _pos) public returns (bool) {
+    function _isMoveLegal(uint8 _pos) public returns (bool) {
         return gameBoard[_pos] == 10;
     }
 

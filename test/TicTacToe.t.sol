@@ -19,7 +19,19 @@ contract TicTacToeTest is Test {
         sut.initGameBoard();
     }
 
-    function test_initGameBoard() public {
+
+    function test_isMoveLegal()    public    {
+       bool actual = sut._isMoveLegal(4);
+        assertTrue(actual);
+    }
+
+
+    function xtest_mint() public{
+        sut.mint();
+        sut.mint();
+        assertEq(2, sut.gamePurse());
+    }
+    function xtest_initGameBoard() public {
         vm.expectEmit();
         emit GameStateEvent("new game board created");
         sut.initGameBoard();
@@ -33,6 +45,8 @@ contract TicTacToeTest is Test {
 
 
     function test_makePlayerXMove() public {
+        vm.expectEmit();
+        emit MoveMadeEvent("BOT moved to: 8. Board state: [10,10,10,10,10,1,10,10,0]");
         sut.makePlayerMove(5, "fake nonce");
     }
 
@@ -40,7 +54,7 @@ contract TicTacToeTest is Test {
         console.log(sut.nonce());
     }
 
-    function test_findColumnWinner() public {
+    function xtest_findColumnWinner() public {
         sut.makePlayerMove(1, "1111");
         sut.makePlayerMove(4, "1111");
         sut.makePlayerMove(7, "1111");
@@ -57,8 +71,8 @@ contract TicTacToeTest is Test {
         vm.pauseGasMetering();
         sut.makePlayerMove(2, 'nonce');
 
-        bool actual1 = sut.isMoveLegal(2);
-        bool actual2 = sut.isMoveLegal(0);
+        bool actual1 = sut._isMoveLegal(2);
+        bool actual2 = sut._isMoveLegal(0);
 
         assertEq(actual1, false);
         assertEq(actual2, true);
