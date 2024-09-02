@@ -27,7 +27,7 @@ Submitted contract for verification:
 
 
 # ANVIL
-anvil --hardfork cancun
+anvil --hardfork cancun --prune-history --transaction-block-keeper 5
 
 forge create --rpc-url http://localhost:8545 \
   --private-key $METAMASK_WALLET_PRIVATE_KEY \

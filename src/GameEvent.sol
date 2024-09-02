@@ -6,43 +6,35 @@ import "@openzeppelin-contracts-5.0.2/utils/Strings.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract GameEvent {
-    string internal lastEventMessage;
+    event GameStateEvent(string message, uint8[9] board);
+    event MoveMadeEvent(string message, uint8[9] board);
+    event GameOverEvent(string message, uint8[3] positions, uint8[9] board);
+    event DrawGameEvent(string message, uint8[9] board);
+    event WinningsTransferedEvent(bool message, uint gamePurse);
 
-    event GameStateEvent(string message);
-    event MoveMadeEvent(string message);
-    event GameOverEvent(string message);
-
-    function emitGameOverEvent(bool _isWinner, uint8 _player, uint8[2][3] memory _positions) public {
-        string memory player = _player == 0 ? 'BOT' : 'X';
-        string memory positions = 'positions: ';
-        for (uint8 i = 0; i < _positions.length; i++) {
-            string.concat(positions, '[');
-            uint8 posX = _positions[i][0];
-            uint8 posY = _positions[i][1];
-            positions = string.concat(Strings.toString(posX), ',', Strings.toString(posY));
-            string.concat(positions, ']');
-        }
-        string memory message = string.concat(player, " won with ", positions);
-        emit GameOverEvent(message);
+    function convertToPlayerMark(uint8 _player) public returns (string memory){
+        return _player == 0 ? 'BOT' : 'X';
     }
 
-    function emitGameEvent(string memory _message) public {
-        lastEventMessage = _message;
-        emit GameStateEvent(_message);
+    function emitGameOverEvent(uint8 _player, uint8[3] memory positions, uint8[9] memory board) public {
+        string memory player = convertToPlayerMark(_player);
+
+        emit GameOverEvent(string.concat(player, " won!"), positions, board);
+    }
+
+    function emitDrawGameEvent(uint8[9] memory board) public {
+        emit DrawGameEvent("Game is a draw", board);
+    }
+
+    function emitGameEvent(string memory _message, uint8[9] memory gameBoard) public {
+        emit GameStateEvent(_message, gameBoard);
     }
 
     function emitMoveMadeEvent(uint8 _pos, uint8 _player, uint8[9] memory gameBoard) public {
-        string memory player = _player == 0 ? 'BOT' : 'X';
-        string memory board = "[";
-        for (uint8 i = 0; i < gameBoard.length; i++) {
-            if (i == gameBoard.length - 1) {
-                board = string.concat(board, Strings.toString(gameBoard[i]), "]");
-            } else {
-                board = string.concat(board, Strings.toString(gameBoard[i]), ",");
-            }
-        }
-        string memory playerMovedToXYMessage = string.concat(player, " moved to: ", Strings.toString(_pos), ". ", "Board state: ", board);
+        string memory player = convertToPlayerMark(_player);
+        string memory playerMovedToXMessage = string.concat(player, " moved to: ", Strings.toString(_pos));
 
-        emit MoveMadeEvent(playerMovedToXYMessage);
+        emit MoveMadeEvent(playerMovedToXMessage, gameBoard);
     }
+
 }

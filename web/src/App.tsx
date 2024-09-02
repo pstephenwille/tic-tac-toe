@@ -28,6 +28,11 @@ function App() {
         }
     }, []);
 
+    const startNewGameHandler = (event: any) => {
+        contract!.initGameBoard()
+            .then((resp: any) => console.log('%c...init', 'color:gold', resp))
+            .catch((error: any) => console.log('%c...errro', 'color:red', error));
+    }
 
     useEffect(() => {
         sol.getSolidityContract().then(solidity => {
@@ -50,13 +55,16 @@ function App() {
                 </a>
             </header>
             <div id={'game'}>
+                <GameTitle/>
+
                 {contract
                     ? <>
-                        <GameTitle/>
-                        <GameBoard contract={contract} provider={provider} signer={signer} />
+                        <GameBoard contract={contract} provider={provider} signer={signer}/>
                     </>
                     : ''
                 }
+
+                <button id={'startGame'} onClick={startNewGameHandler}>Start New Game</button>
             </div>
 
         </div>
